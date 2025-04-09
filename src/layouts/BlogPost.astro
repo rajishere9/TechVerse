@@ -14,42 +14,57 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 	<head>
 		<BaseHead title={title} description={description} />
 		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
+			.post-header {
+				margin-bottom: 2rem;
 			}
 			.hero-image {
-				width: 100%;
+				width: 100%; /* Make image container full width */
+				margin-bottom: 2.5rem;
 			}
 			.hero-image img {
 				display: block;
+				width: 100%; /* Image takes full width of container */
+				max-height: 500px; /* Limit max height */
+				object-fit: cover; /* Cover the area */
+				border-radius: 8px; /* Match global img style */
 				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
+				/* box-shadow: var(--box-shadow); Removed, might be too much */
 			}
 			.prose {
-				width: 800px; /* Increased width */
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
+				/* Width is inherited from main in global.css */
+				/* Color is inherited from body in global.css */
+				padding: 0; /* Remove extra padding, main has padding */
 			}
 			.title {
-				margin-bottom: 1em;
-				padding: 2em 0; /* Increased vertical padding */
+				margin-bottom: 1.5rem; /* Adjusted margin */
+				padding: 0; /* Remove padding */
 				text-align: center;
-				line-height: 1;
+				line-height: 1.2; /* Adjusted line-height */
 			}
 			.title h1 {
-				margin: 0 0 0.5em 0;
+				font-size: 3em; /* Slightly smaller than homepage h1 */
+				margin: 0 0 0.75rem 0; /* Adjusted margin */
+				color: rgb(var(--white)); /* Ensure title is light */
 			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
+			.meta { /* Renamed .date to .meta for clarity */
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 0.5rem; /* Space between date and updated date */
+				margin-bottom: 1.5rem; /* Space below meta */
+				color: rgb(var(--gray)); /* Use gray variable */
+				font-size: 0.9em;
 			}
 			.last-updated-on {
 				font-style: italic;
+				color: rgb(var(--gray)); /* Use gray variable */
+			}
+			/* Ensure prose content like p, li etc. have good spacing */
+			.prose > :global(* + *) {
+				margin-top: 1.2em;
+			}
+			.prose :global(hr) {
+				margin: 2.5em 0; /* More space around horizontal rules */
 			}
 		</style>
 	</head>
@@ -57,27 +72,26 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 	<body>
 		<Header />
 		<main>
-			<article>
-				<div class="hero-image">
-					{heroImage && <img width={1020} height={510} src={heroImage} alt="" />}
-				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
-						</div>
-						<h1>{title}</h1>
-						<hr />
+			<article class="prose"> {/* Apply prose class to article */}
+				<div class="post-header">
+					<div class="hero-image">
+						{heroImage && <img width={1020} height={510} src={heroImage} alt={`Hero image for ${title}`} />}
 					</div>
-					<slot />
+					<div class="title">
+						<h1>{title}</h1>
+					</div>
+					<div class="meta">
+						<span>Published: <FormattedDate date={pubDate} /></span>
+						{
+							updatedDate && (
+								<span class="last-updated-on">
+									(Updated: <FormattedDate date={updatedDate} />)
+								</span>
+							)
+						}
+					</div>
 				</div>
+				<slot /> {/* The actual blog post content */}
 			</article>
 		</main>
 		<Footer />
